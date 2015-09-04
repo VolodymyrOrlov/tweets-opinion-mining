@@ -1,0 +1,23 @@
+tweets-opinion-mining {
+
+  token {
+
+    consumer {
+
+      key = "your-consumer-key"
+
+      secret = "your-consumer-secret"
+
+    }
+
+    access {
+
+      key = "your-access-key"
+
+      secret = "your-access-secret"
+
+    }
+
+  }
+
+}
