@@ -39,7 +39,7 @@ class TwitterAPI(override protected val consumer: Token, override protected val 
 
   }
 
-  def traverse(query: String, lang: String = "en", timeout: Duration = 10 seconds): Stream[Tweet] = {
+  def stream(query: String, lang: String = "en", timeout: Duration = 10 seconds): Stream[Tweet] = {
 
     def recursive(maxID: Option[Long]): Stream[Tweet] = {
 

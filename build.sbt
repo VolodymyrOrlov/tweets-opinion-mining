@@ -24,3 +24,5 @@ libraryDependencies ++= Seq(
   "org.scalaz" %% "scalaz-core" % "7.1.3",
   "org.scalatest" % "scalatest_2.11" % "2.2.4" % "test"
 )
+
+mainClass in Compile := Some("com.vorlov.Main")

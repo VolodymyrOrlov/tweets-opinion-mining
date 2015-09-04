@@ -20,4 +20,16 @@ tweets-opinion-mining {
 
   }
 
+  input {
+
+      query = "my query"
+
+  }
+
+  output {
+
+      path = "/tmp/result.csv"
+
+  }
+
 }

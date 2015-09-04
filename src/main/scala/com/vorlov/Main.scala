@@ -1,15 +1,16 @@
 package com.vorlov
 
 import java.io.File
+import java.nio.file.StandardOpenOption
 
 import akka.actor.ActorSystem
 import com.typesafe.config.ConfigFactory
+import com.vorlov.api.twitter.model.Tweet
 import com.vorlov.api.twitter.{Token, TwitterAPI}
 import com.vorlov.util.IOUtils
 
-import scala.concurrent.Await
+import util.Csv._
 
-import scala.concurrent.duration._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -38,12 +39,22 @@ object Main extends App {
     Token(config.getString("tweets-opinion-mining.token.consumer.key"), config.getString("tweets-opinion-mining.token.consumer.secret")),
     Token(config.getString("tweets-opinion-mining.token.access.key"), config.getString("tweets-opinion-mining.token.access.secret")))
 
-//  for { status <- Await result(twitterApi.search("sungevity"), 10 seconds) } yield println(status)
+  val outputPath = config.getString("tweets-opinion-mining.output.path")
 
-  twitterApi.traverse("sungevity").foreach{
-    tweet =>
+  implicit val TweetCsvFormat = new CSVFormat[Tweet] {
+    override def cells(tweet: Tweet): Iterable[(String, Any)] = Seq(
+      ("id" -> tweet.id),
+      ("text" -> tweet.text),
+      ("language" -> tweet.language),
+      ("user" -> tweet.user.name)
+    )
+  }
 
-      println(tweet)
+  twitterApi.stream(config.getString("tweets-opinion-mining.input.query")).toIterator.asCSV.foreach{
+
+    line =>
+
+      IOUtils.write(outputPath, line + "\n", StandardOpenOption.APPEND, StandardOpenOption.CREATE)
   }
 
   system.shutdown()
