@@ -1,11 +1,12 @@
 package com.vorlov.api.twitter
 
 import akka.actor.ActorSystem
-import com.vorlov.api.twitter.model.{TwitterSearchResponse, TwitterStatus}
+import com.vorlov.api.twitter.model.{TwitterSearchResponse, Tweet}
 import org.slf4j.LoggerFactory
 import spray.http.{HttpRequest, HttpResponse}
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.duration._
+import scala.concurrent.{Await, ExecutionContext, Future}
 
 import spray.client.pipelining._
 import spray.httpx.SprayJsonSupport._
@@ -30,14 +31,28 @@ class TwitterAPI(override protected val consumer: Token, override protected val 
       r
   }
 
-  def search(query: String, count: Int = 100, lang: String = "en"): Future[Seq[TwitterStatus]] = {
+  def search(query: String, lang: String = "en", count: Int = 100, maxID: Option[Long] = None): Future[Seq[Tweet]] = {
 
     val pipeline: HttpRequest => Future[TwitterSearchResponse] = oauthSignRequest ~> logRequest ~> sendReceive ~> logResponse ~> unmarshal[TwitterSearchResponse]
 
-    pipeline(Get(s"$base?q=$query&lang=$lang&count=$count")).map(_.statuses)
+    pipeline(Get(s"$base?q=$query&lang=$lang&count=$count" + maxID.map(id => s"&max_id=$id").getOrElse(""))).map(_.statuses)
 
   }
 
+  def traverse(query: String, lang: String = "en", timeout: Duration = 10 seconds): Stream[Tweet] = {
+
+    def recursive(maxID: Option[Long]): Stream[Tweet] = {
+
+      Await result(search(query, lang = lang, maxID = maxID), timeout) match {
+        case tweets if !tweets.isEmpty => tweets.toStream.append(recursive(Some(tweets.last.id - 1)))
+        case _ => Stream.empty
+      }
+
+    }
+
+    recursive(None)
+
+  }
 
 
 }

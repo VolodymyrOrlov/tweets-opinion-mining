@@ -38,7 +38,13 @@ object Main extends App {
     Token(config.getString("tweets-opinion-mining.token.consumer.key"), config.getString("tweets-opinion-mining.token.consumer.secret")),
     Token(config.getString("tweets-opinion-mining.token.access.key"), config.getString("tweets-opinion-mining.token.access.secret")))
 
-  for { status <- Await result(twitterApi.search("sungevity"), 10 seconds) } yield println(status)
+//  for { status <- Await result(twitterApi.search("sungevity"), 10 seconds) } yield println(status)
+
+  twitterApi.traverse("sungevity").foreach{
+    tweet =>
+
+      println(tweet)
+  }
 
   system.shutdown()
 
