@@ -1,6 +1,6 @@
 package com.vorlov.api.twitter.protocol
 
-import com.vorlov.model.{TwitterSearchResponse, TwitterStatus}
+import com.vorlov.api.twitter.model.{TwitterSearchResponse, TwitterStatus}
 import spray.json._
 
 object TwitterProtocol extends DefaultJsonProtocol {
