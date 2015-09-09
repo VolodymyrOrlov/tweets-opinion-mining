@@ -1,62 +1,43 @@
 package com.vorlov
 
 import java.io.File
-import java.nio.file.StandardOpenOption
 
-import akka.actor.ActorSystem
 import com.typesafe.config.ConfigFactory
-import com.vorlov.api.twitter.model.Tweet
-import com.vorlov.api.twitter.{Token, TwitterAPI}
+import com.vorlov.commands._
 import com.vorlov.util.IOUtils
 
-import util.Csv._
+import scala.collection.mutable
 
-
-import scala.concurrent.ExecutionContext.Implicits.global
 
 object Main extends App {
 
-  def help() {
-    println(s"\nUsage: ${this.getClass.getName} <configuration file>\n")
+  val commands = mutable.Map.empty[String, Command]
+
+  def registerCommand(triggeredBy: String, command: Command) {
+    commands(triggeredBy) = command
   }
 
-  if (args.length < 1) {
+  def help() {
+    println(s"\nUsage: ${this.getClass.getName} command <configuration file>\n")
+  }
+
+  if (args.length < 2) {
     Console.err.println("Incorrect number of input arguments.")
     help()
     sys.exit(1)
   }
 
-  if (!IOUtils.isReadable(args(0))) {
+  if (!IOUtils.isReadable(args(1))) {
     Console.err.println("Could not open configuration file.")
     sys.exit(2)
   }
 
-  implicit val config = ConfigFactory.parseFile(new File(args(0)))
+  val config = ConfigFactory.parseFile(new File(args(1)))
 
-  implicit val system = ActorSystem("TweetsOpinionMining", config)
+  registerCommands
 
-  val twitterApi = new TwitterAPI(
-    Token(config.getString("tweets-opinion-mining.token.consumer.key"), config.getString("tweets-opinion-mining.token.consumer.secret")),
-    Token(config.getString("tweets-opinion-mining.token.access.key"), config.getString("tweets-opinion-mining.token.access.secret")))
-
-  val outputPath = config.getString("tweets-opinion-mining.output.path")
-
-  implicit val TweetCsvFormat = new CSVFormat[Tweet] {
-    override def cells(tweet: Tweet): Iterable[(String, Any)] = Seq(
-      ("id" -> tweet.id),
-      ("text" -> tweet.text),
-      ("language" -> tweet.language),
-      ("user" -> tweet.user.name)
-    )
+  commands.find(_._1 == args(0)).collect{
+    case (_, command) => command.run(config)
   }
-
-  twitterApi.stream(config.getString("tweets-opinion-mining.input.query")).toIterator.asCSV.foreach{
-
-    line =>
-
-      IOUtils.write(outputPath, line + "\n", StandardOpenOption.APPEND, StandardOpenOption.CREATE)
-  }
-
-  system.shutdown()
 
 }
