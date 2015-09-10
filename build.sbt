@@ -22,7 +22,6 @@ libraryDependencies ++= Seq(
   "org.apache.lucene" % "lucene-analyzers-common" % "5.3.0",
   "org.scalanlp" % "breeze_2.10" % "0.11.2",
   "org.apache.commons" % "commons-lang3" % "3.4",
-  "commons-validator" % "commons-validator" % "1.4.1",
   "org.scalaz" %% "scalaz-core" % "7.1.3",
   "org.slf4j" % "slf4j-api" % "1.7.12",
   "org.slf4j" % "slf4j-simple" % "1.7.12",

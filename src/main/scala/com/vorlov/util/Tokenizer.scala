@@ -5,8 +5,10 @@ import java.io.{Reader, StringReader}
 import org.apache.lucene.analysis.Analyzer.TokenStreamComponents
 import org.apache.lucene.analysis.TokenStream
 import org.apache.lucene.analysis.core.{StopAnalyzer, StopFilter}
+import org.apache.lucene.analysis.miscellaneous.LengthFilter
 import org.apache.lucene.analysis.standard.{UAX29URLEmailTokenizer, StandardFilter}
 import org.apache.lucene.analysis.tokenattributes.{TypeAttribute, CharTermAttribute}
+import org.apache.lucene.analysis.tr.ApostropheFilter
 import org.apache.lucene.analysis.util.FilteringTokenFilter
 
 
@@ -15,7 +17,7 @@ object TwitterTokenizer {
   private def tokenStreamComponents(reader: Reader): TokenStreamComponents = {
     val tokenizer = new UAX29URLEmailTokenizer()
     tokenizer.setReader(reader)
-    val filter = new StopFilter(new StandardFilter(new URLTokenFilter(tokenizer)), StopAnalyzer.ENGLISH_STOP_WORDS_SET)
+    val filter = new ApostropheFilter(new LengthFilter(new StandardFilter(new URLTokenFilter(tokenizer)), 2, Int.MaxValue))
     new TokenStreamComponents(tokenizer, filter)
   }
 
