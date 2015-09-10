@@ -1,11 +1,10 @@
-package com.vorlov
+package com.vorlov.helper.format
 
 import com.vorlov.api.twitter.model.{TwitterUser, TweetMetadata, Tweet}
 import com.vorlov.util.Csv.CSVFormat
+import com.vorlov.util.Date._
 
-import util.Date._
-
-package object helper {
+package object csv {
 
   implicit val TweetCsvFormat = new CSVFormat[Tweet] {
     override def write(tweet: Tweet): Iterable[(String, Any)] = Seq(

@@ -6,7 +6,9 @@ abstract class Classifier {
 
   type ClassifierModel
 
-  final def train(samples: Iterable[(String, String)]): ClassifierModel = train(samples, None)
+  type LabeledText = (String, String)
+
+  final def train(samples: Iterable[LabeledText]): ClassifierModel = train(samples, None)
 
   @tailrec
   final def train(samples: Iterable[(String, String)], model: Option[ClassifierModel]): ClassifierModel = (samples, model) match {

@@ -13,8 +13,14 @@ object Main extends App {
 
   val commands = mutable.Map.empty[String, Command]
 
-  def registerCommand(triggeredBy: String, command: Command) {
-    commands(triggeredBy) = command
+  def registerCommand(command: Command, triggeredBy: String*): Unit = registerCommand(triggeredBy, command)
+
+  def registerCommand(triggeredBy: String, command: Command): Unit = registerCommand(Seq(triggeredBy), command)
+
+  def registerCommand(triggeredBy: Iterable[String], command: Command): Unit = {
+    for( trigger <- triggeredBy ) {
+      commands(trigger) = command
+    }
   }
 
   def help() {

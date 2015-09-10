@@ -4,10 +4,9 @@ import java.io.File
 
 import com.vorlov.classifier.naivebayes.NaiveBayesClassifier
 import com.vorlov.util
-import org.apache.lucene.analysis.standard.StandardAnalyzer
 import org.slf4j.LoggerFactory
 
-import com.vorlov.helper._
+import com.vorlov.helper.format.csv._
 import util.Csv._
 
 object NaiveBayes extends Command {
@@ -20,7 +19,6 @@ object NaiveBayes extends Command {
 
   log.info(s"Reading data from $inputPath")
 
-  val tokenizer = new StandardAnalyzer()
 
   val tweets = new File(inputPath).asCSV
 

@@ -9,7 +9,7 @@ import com.vorlov.util
 import com.vorlov.util.IOUtils
 import org.slf4j.LoggerFactory
 
-import com.vorlov.helper._
+import com.vorlov.helper.format.csv._
 import util.Csv._
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -24,11 +24,11 @@ object FetchData extends Command {
     Token(configuration.getString("tweets-opinion-mining.twitter.token.consumer.key"), configuration.getString("tweets-opinion-mining.twitter.token.consumer.secret")),
     Token(configuration.getString("tweets-opinion-mining.twitter.token.access.key"), configuration.getString("tweets-opinion-mining.twitter.token.access.secret")))
 
-  val outputPath = configuration.getString("tweets-opinion-mining.data.path")
+  val outputPath = configuration.getString("tweets-opinion-mining.data.raw.path")
 
   log.info(s"Loading data into $outputPath")
 
-  twitterApi.stream(configuration.getString("tweets-opinion-mining.twitter.query")).toIterator.asCSV.foreach{
+  twitterApi.stream(configuration.getString("tweets-opinion-mining.twitter.query")).toIterator.asCSV.drop(if(IOUtils.exists(outputPath)) 1 else 0).foreach {
 
     line =>
 
