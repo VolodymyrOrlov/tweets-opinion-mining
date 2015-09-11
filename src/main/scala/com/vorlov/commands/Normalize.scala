@@ -22,14 +22,16 @@ object Normalize extends Command {
 
   val tweets = new File(inputPath).asCSV.toStream
 
-  log.info(s"Writing data to $outputPath")
-
   val c = tweets.sortBy(_.id).sliding(2).filter{
     _ match {
       case Stream(t1, t2) if t1.id == t2.id => false
       case _ => true
     }
   }.map(_.head)
+
+  IOUtils.delete(outputPath)
+
+  log.info(s"Writing data to $outputPath")
 
   c.asCSV.foreach {
     line =>

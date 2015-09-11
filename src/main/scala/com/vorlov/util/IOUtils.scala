@@ -19,6 +19,8 @@ object IOUtils {
 
   def exists(path: String, options: OpenOption*) = Files.exists(Paths.get(path))
 
+  def delete(path: String) = Files.delete(Paths.get(path))
+
   def isWritable(path: String) = Files.isWritable(Paths.get(path))
 
   def randomName = UUID.randomUUID().toString
