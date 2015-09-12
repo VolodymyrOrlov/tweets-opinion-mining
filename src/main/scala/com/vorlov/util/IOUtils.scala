@@ -1,6 +1,6 @@
 package com.vorlov.util
 
-import java.nio.file.{Files, OpenOption, Paths}
+import java.nio.file.{LinkOption, Files, OpenOption, Paths}
 import java.util.UUID
 
 object IOUtils {
@@ -17,7 +17,7 @@ object IOUtils {
 
   def isReadable(path: String) = Files.isReadable(Paths.get(path))
 
-  def exists(path: String, options: OpenOption*) = Files.exists(Paths.get(path))
+  def exists(path: String, options: LinkOption*) = Files.exists(Paths.get(path), options:_*)
 
   def delete(path: String) = Files.delete(Paths.get(path))
 

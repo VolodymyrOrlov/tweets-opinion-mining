@@ -4,11 +4,24 @@ object StringUtils {
 
   implicit class StringUtilsRishString(str: String) {
 
+    def hash = {
+      var h = 1125899906
+      val len = str.length()
+
+      for (i <- 0 until len) {
+        h = 31*h + str.charAt(i)
+      }
+
+      h
+    }
+
     def simhash() = {
 
       val v = new Array[Int](32)
 
-      for (feature <- shingles.map(_.hashCode)) {
+      val features = shingles.map(_.hash)
+
+      for (feature <- features) {
         var n = feature
         for (b <- 0 until 32) {
           v(b) += (if ((n & 1) == 1) 1 else -1)
