@@ -16,10 +16,6 @@ class StringUtilsSpec  extends WordSpec with Matchers {
 
     "correctly calculate simhash of a string" in {
 
-      println(Integer.toBinaryString("RT @LAKings: .@KingsVision caught up w/ Bill Ranford, Patrik Bartosak, &amp; Adrian Kempe at Day 1 of Rookie Camp pres by @Sungevity!https://tâ€¦".tokens.mkString(" ").simhash()))
-
-      println(Integer.toBinaryString("RT @LAKings: .@KingsVision caught up w/ Bill Ranford, Patrik Bartosak, &amp; Adrian Kempe at Day 1 of Rookie Camp pres by @Sungevity!https://tâ€¦".tokens.mkString(" ").simhash()))
-
       "the cat sat on the mat".simhash should === (-1370850857)
 
       "the cat sat on a mat".simhash should === (-1370850857)

@@ -2,6 +2,8 @@ package com.vorlov.helper.similarity
 
 import org.slf4j.LoggerFactory
 
+import scala.annotation.tailrec
+
 object CircularSimhashDeduplication {
 
   implicit val log = LoggerFactory.getLogger(getClass.getName)
@@ -9,15 +11,17 @@ object CircularSimhashDeduplication {
   import com.vorlov.util.StringUtils._
   import com.vorlov.util.Log._
 
-  def deduplicate[T](tweets: Stream[T])(implicit stringify: T => String): Stream[T] = deduplicate(tweets, 31)
+  def deduplicate[T](data: Seq[T])(implicit stringify: T => String): Seq[T] = deduplicate(data, 32)
 
-  private def deduplicate[T](tweets: Stream[T], shift: Int)(implicit stringify: T => String): Stream[T] = {
-    def dedup = tweets.map(t => (Integer.rotateLeft(stringify(t).simhash, shift), t)).sortBy(_._1).sliding(2).filter{
-      _ match {
-        case Stream((hash1, tweet1), (hash2, tweet2)) if hashDistance(hash1, hash2) < 2 && distance(tweet1, tweet2) < 0.3 => false
-        case _ => true
-      }
-    }.map(_.head._2).toStream
+  @tailrec
+  private def deduplicate[T](data: Seq[T], shift: Int)(implicit stringify: T => String): Seq[T] = {
+    def dedup = data.map(t => (Integer.rotateLeft(stringify(t).simhash, shift), t)).sortBy(_._1).foldLeft(Seq.empty[(Int, T)]) {
+      (result, e) =>
+        result.take(5).exists(v => hashDistance(v._1, e._1) < 2 && distance(v._2, e._2) < 0.3) match {
+          case true => result
+          case false => e +: result
+        }
+    }.map(_._2)
 
     shift match {
       case n if n < 1 => dedup
